@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 
 // 👉 THIS IS REQUIRED
 app.get("/", (req, res) => {
-  res.send("Hello from Railway 🚀");
+  res.send("MOHAN HEALTH SERVER RAILWAY 🚀");
 });
 
 app.listen(PORT, () => {
