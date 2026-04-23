@@ -5,26 +5,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.urlencoded({ extended: true }));
 
-// FULL PRODUCT SYSTEM
-const products = [
-  "VIPERA 30 (10ml)",
-  "VIPERA 200 (10ml)",
-  "ACONITE 30 (10ml)",
-  "BELLADONA 30 (10ml)",
-
-  "BERBERIS Q (20ml)",
-  "BERBERIS Q (100ml)",
-  "ALFALFA Q (20ml)",
-
-  "BC 1 (20gm)",
-  "BC 12 (20gm)",
-  "Calc Phos (20gm)",
-
-  "R1 Drops (22ml)",
-  "R7 Drops (22ml)"
-];
-
-// HOME PAGE
+// HOME PAGE (THIS WAS MISSING)
 app.get("/", (req, res) => {
   res.send(`
     <h1>Mohan Health and Home</h1>
@@ -43,14 +24,16 @@ app.get("/", (req, res) => {
   `);
 });
 
-// PRODUCTS PAGE
+// PRODUCTS
 app.get("/products", (req, res) => {
-  let list = products.map(p => `<li>${p}</li>`).join("");
-
   res.send(`
-    <h2>Product Catalogue</h2>
-    <ul>${list}</ul>
-
+    <h2>Products</h2>
+    <ul>
+      <li>VIPERA 30 (10ml)</li>
+      <li>BERBERIS Q (20ml)</li>
+      <li>BC 12 (20gm)</li>
+      <li>R1 Drops (22ml)</li>
+    </ul>
     <a href="/">Back</a>
   `);
 });
@@ -61,25 +44,21 @@ app.get("/order", (req, res) => {
     <h2>Place Order</h2>
     <form action="/submit" method="post">
       Name:<br><input name="name"><br>
-      Phone:<br><input name="phone"><br>
       Product:<br><input name="product"><br><br>
       <button type="submit">Order</button>
     </form>
   `);
 });
 
-// SUBMIT ORDER
+// SUBMIT
 app.post("/submit", (req, res) => {
   const { name, product } = req.body;
 
-  const whatsapp =
+  const link =
     "https://wa.me/919837100364?text=" +
-    encodeURIComponent(`Order: ${product}, Name: ${name}`);
+    encodeURIComponent("Order: " + product + " Name: " + name);
 
-  res.send(`
-    <h3>Order Ready</h3>
-    <a href="${whatsapp}">Send on WhatsApp</a>
-  `);
+  res.send(`<a href="${link}">Send Order on WhatsApp</a>`);
 });
 
 app.listen(PORT, () => {
