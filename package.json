@@ -1,6 +1,7 @@
 {
-  "name": "nodeapp",
+  "name": "mohan-health",
   "version": "1.0.0",
+  "description": "Mohan Health and Home",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
