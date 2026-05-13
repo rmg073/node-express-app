@@ -1,25 +1,26 @@
 const express = require("express");
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // HOME PAGE
 app.get("/", (req, res) => {
   res.send(`
     <h1>Mohan Health and Home</h1>
-    <p>50 Years in the Making</p>
 
-    <h3>Categories</h3>
+    <h3>50 Years in the Making</h3>
+
+    <h2>Categories</h2>
 
     <ul>
       <li>Dilution</li>
-      <li>Mother Tincture</li>
+      <li>Mother Tinctures</li>
       <li>Biochemic Salts</li>
       <li>Biochemic Numbers</li>
       <li>R Drops</li>
     </ul>
 
-    <h3>Sample Products</h3>
+    <h2>Sample Products</h2>
 
     <ul>
       <li>VIPERA 30 (10ml)</li>
@@ -28,12 +29,14 @@ app.get("/", (req, res) => {
       <li>R1 Drops (22ml)</li>
     </ul>
 
+    <br>
+
     <a href="https://wa.me/919837100364">
       Order on WhatsApp
     </a>
   `);
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log("Server running on port " + PORT);
+app.listen(PORT, () => {
+  console.log("HTTP server listening on port " + PORT);
 });
