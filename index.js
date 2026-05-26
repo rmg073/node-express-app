@@ -3,7 +3,6 @@ const app = express();
 
 const PORT = process.env.PORT || 8080;
 
-// HOME PAGE
 app.get("/", (req, res) => {
   res.send(`
     <h1>Mohan Health and Home</h1>
@@ -13,7 +12,7 @@ app.get("/", (req, res) => {
     <h2>Categories</h2>
 
     <ul>
-      <li>Dilution</li>
+      <li>Dilutions</li>
       <li>Mother Tinctures</li>
       <li>Biochemic Salts</li>
       <li>Biochemic Numbers</li>
@@ -24,7 +23,7 @@ app.get("/", (req, res) => {
 
     <ul>
       <li>VIPERA 30 (10ml)</li>
-      <li>BERBERIS Q (20ml)</li>
+      <li>BERBERIS Q (30ml)</li>
       <li>BC 12 (20gm)</li>
       <li>R1 Drops (22ml)</li>
     </ul>
