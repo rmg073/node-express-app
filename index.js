@@ -1,41 +1,86 @@
 const express = require("express");
+const path = require("path");
+
 const app = express();
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 10000;
 
+// CSS FOLDER
+app.use(express.static(path.join(__dirname, "public")));
+
+// HOME PAGE
 app.get("/", (req, res) => {
   res.send(`
-    <h1>Mohan Health and Home</h1>
+  <!DOCTYPE html>
+  <html>
 
-    <h3>50 Years in the Making</h3>
+  <head>
+    <title>MOHAN HEALTH AND HOME</title>
+    <link rel="stylesheet" href="/style.css">
+  </head>
 
-    <h2>Categories</h2>
+  <body>
 
-    <ul>
-      <li>Dilutions</li>
-      <li>Mother Tinctures</li>
-      <li>Biochemic Salts</li>
-      <li>Biochemic Numbers</li>
-      <li>R Drops</li>
-    </ul>
+    <header>
+      <h1>MOHAN HEALTH AND HOME</h1>
+      <p>50 Years in the Making</p>
+    </header>
 
-    <h2>Sample Products</h2>
+    <section class="hero">
+      <h1>Welcome to Mohan Health and Home</h1>
 
-    <ul>
-      <li>VIPERA 30 (10ml)</li>
-      <li>BERBERIS Q (30ml)</li>
-      <li>BC 12 (20gm)</li>
-      <li>R1 Drops (22ml)</li>
-    </ul>
+      <p>
+        Trusted Homeopathic Store for
+        Dilutions, Mother Tinctures,
+        Biochemic Salts, BC Numbers and R Drops
+      </p>
 
-    <br>
+      <a class="whatsapp"
+         href="https://wa.me/919837100364">
+         Order on WhatsApp
+      </a>
+    </section>
 
-    <a href="https://wa.me/919837100364">
-      Order on WhatsApp
-    </a>
+    <section class="section">
+
+      <div class="card">
+        <h2>Dilutions</h2>
+        <p>Premium homeopathic dilution medicines.</p>
+      </div>
+
+      <div class="card">
+        <h2>Mother Tinctures</h2>
+        <p>Original mother tinctures available.</p>
+      </div>
+
+      <div class="card">
+        <h2>Biochemic Salts</h2>
+        <p>Complete range of biochemic remedies.</p>
+      </div>
+
+      <div class="card">
+        <h2>BC Numbers</h2>
+        <p>Popular biochemic combinations.</p>
+      </div>
+
+      <div class="card">
+        <h2>R Drops</h2>
+        <p>German remedy drops available.</p>
+      </div>
+
+    </section>
+
+    <footer>
+      <h3>Mohan Health and Home</h3>
+      <p>Homeopathy • Wellness • Trusted Care</p>
+    </footer>
+
+  </body>
+  </html>
   `);
 });
 
+// START SERVER
 app.listen(PORT, () => {
   console.log("HTTP server listening on port " + PORT);
 });
