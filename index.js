@@ -187,13 +187,6 @@ item.use.toLowerCase().includes(input)
 if(filtered.length === 0){
 
 results.innerHTML =
-"<h2>No medicines found</h2>";
-
-return;
-
-}
-
-results.innerHTML =
 filtered.map(item => `
 
 <div class="product-card">
@@ -205,19 +198,29 @@ filtered.map(item => `
 <h2>${item.price}</h2>
 
 <a
-href="https://wa.me/919837100364"
+href="https://www.google.com/search?q=homeopathy+${item.name}"
 target="_blank"
 class="whatsapp-btn"
 >
 
-Order Now
+View Remedy
+
+</a>
+
+<a
+href="https://wa.me/919837100364?text=I want to order ${item.name}"
+target="_blank"
+class="whatsapp-btn"
+style="margin-top:10px; display:inline-block;"
+>
+
+Buy From Us
 
 </a>
 
 </div>
 
 `).join("");
-
 }
 
 </script>
