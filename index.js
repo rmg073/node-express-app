@@ -42,6 +42,22 @@ app.get("/", (req, res) => {
     </p>
 
     <button>Shop Now</button>
+    <div class="ai-search">
+
+  <input
+    type="text"
+    id="medicineSearch"
+    placeholder="AI Search medicines, diseases, symptoms..."
+    class="ai-search-box"
+  >
+
+  <button onclick="searchMedicine()" class="ai-btn">
+    AI Search
+  </button>
+
+</div>
+
+<div id="searchResults" class="results-grid"></div>
   </section>
 
   <section class="categories">
