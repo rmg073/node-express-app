@@ -187,6 +187,13 @@ item.use.toLowerCase().includes(input)
 if(filtered.length === 0){
 
 results.innerHTML =
+"<h2>No medicines found</h2>";
+
+return;
+
+}
+
+results.innerHTML =
 filtered.map(item => `
 
 <div class="product-card">
@@ -207,11 +214,12 @@ View Remedy
 
 </a>
 
+<br><br>
+
 <a
 href="https://wa.me/919837100364?text=I want to order ${item.name}"
 target="_blank"
 class="whatsapp-btn"
-style="margin-top:10px; display:inline-block;"
 >
 
 Buy From Us
@@ -221,8 +229,8 @@ Buy From Us
 </div>
 
 `).join("");
-}
 
+}
 </script>
 </body>
 
