@@ -42,10 +42,8 @@ text-decoration:none;
 }
 
 .hero{
-padding:50px 20px;
+padding:30px 15px;
 text-align:center;
-background:linear-gradient(135deg,#0a6d3b,#25D366);
-color:white;
 }
 
 .hero h1{
@@ -80,23 +78,8 @@ padding:20px;
 .product-card{
 background:white;
 padding:20px;
-border-radius:12px;
-box-shadow:0 4px 15px rgba(0,0,0,0.1);
-text-align:center;
-}
-
-.product-card a{
-display:inline-block;
-margin-top:10px;
-padding:10px 15px;
-background:#25D366;
-color:white;
-text-decoration:none;
-border-radius:8px;
-}
-
-.product-card a:hover{
-opacity:0.9;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
 }
 
 footer{
