@@ -1,27 +1,27 @@
 [
-{
-"name":"CALC. FLOUR 3X",
-"packing":"20GM",
-"company":"BIOCHEMIC"
-},
-{
-"name":"BC 1",
-"packing":"20GM",
-"company":"BIOCOMBINATION"
-},
-{
-"name":"AALSERUM 7X",
-"packing":"20ML",
-"company":"HOMEOPATHY"
-},
-{
-"name":"AALSERUM 3X",
-"packing":"11ML",
-"company":"DR RECKWEG"
-},
-{
-"name":"R 1",
-"packing":"22ML",
-"company":"DR RECKEWEG"
-}
+  {
+    "name": "Arnica 30",
+    "category": "Dilution",
+    "price": "120"
+  },
+  {
+    "name": "Belladonna 30",
+    "category": "Dilution",
+    "price": "110"
+  },
+  {
+    "name": "Berberis Q",
+    "category": "Mother Tincture",
+    "price": "95"
+  },
+  {
+    "name": "BC 12",
+    "category": "Biochemic",
+    "price": "80"
+  },
+  {
+    "name": "R1 Drops",
+    "category": "R Drops",
+    "price": "150"
+  }
 ]
