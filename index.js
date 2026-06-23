@@ -1,10 +1,15 @@
 const express = require("express");
 const path = require("path");
-
+const fs = require("fs");
 const app = express();
 
 const PORT = process.env.PORT || 10000;
-
+const medicines = JSON.parse(
+  fs.readFileSync(
+    path.join(__dirname, "medicines.json"),
+    "utf8"
+  )
+);
 // CSS FOLDER
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -127,40 +132,10 @@ app.get("/", (req, res) => {
     </p>
   </footer>
 <script>
+const medicines = ${JSON.stringify(medicines)};
+</script>
 
-const medicines = [
-
-{
-name: "Arnica 30",
-use: "Pain, injury, body soreness",
-price: "₹120"
-},
-
-{
-name: "Belladonna 30",
-use: "Fever and redness",
-price: "₹110"
-},
-
-{
-name: "Nux Vomica 30",
-use: "Gas and acidity",
-price: "₹130"
-},
-
-{
-name: "Berberis Q",
-use: "Kidney and urine problems",
-price: "₹95"
-},
-
-{
-name: "R1 Drops",
-use: "Fever support",
-price: "₹150"
-}
-
-];
+<script>
 
 function searchMedicine() {
 
@@ -180,7 +155,7 @@ item.name.toLowerCase().includes(input)
 
 ||
 
-item.use.toLowerCase().includes(input)
+item.category.toLowerCase().includes(input)
 
 );
 
@@ -200,7 +175,7 @@ filtered.map(item => `
 
 <h3>${item.name}</h3>
 
-<p>${item.use}</p>
+<p>${item.category}</p>
 
 <h2>${item.price}</h2>
 
@@ -217,7 +192,7 @@ View Remedy
 <br><br>
 
 <a
-href="https://wa.me/919837100364?text=I want to order ${item.name}"
+href="https://wa.me/918630335545?text=I want to order ${item.name}"
 target="_blank"
 class="whatsapp-btn"
 >
