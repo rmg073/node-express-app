@@ -132,10 +132,8 @@ app.get("/", (req, res) => {
     </p>
   </footer>
 <script>
-const medicines = ${JSON.stringify(medicines)};
-</script>
 
-<script>
+const medicines = ${JSON.stringify(medicines)};
 
 function searchMedicine() {
 
