@@ -1,108 +1,414 @@
+/* ==========================
+   MOHAN HEALTH & HOME
+   COMPLETE STYLE.CSS
+========================== */
+
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
 }
 
 body{
-background:#f8f8f8;
+    background:#f5f7f9;
+    color:#222;
 }
+
+/* TOP BAR */
+
+.top-bar{
+    background:#0c3f33;
+    color:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 30px;
+    font-size:14px;
+}
+
+/* NAVBAR */
 
 .navbar{
-display:flex;
-flex-wrap:wrap;
-justify-content:space-between;
-align-items:center;
-padding:15px;
-background:#0a6d3b;
-color:white;
+
+    background:#0a6d3b;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:20px 35px;
+
+    gap:25px;
+
 }
 
-.logo{
-font-size:22px;
-font-weight:bold;
-text-align:center;
+/* LOGO */
+
+.logo h2{
+
+    color:white;
+
+    font-size:34px;
+
 }
 
-.search-box{
-padding:10px;
-width:300px;
-max-width:100%;
-border-radius:5px;
-border:none;
+.logo p{
+
+    color:white;
+
+    font-size:15px;
+
+    margin-top:4px;
+
 }
+
+/* SEARCH */
+
+.search-area{
+
+    flex:1;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin:0 25px;
+
+}
+
+#searchType{
+
+    width:160px;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:8px;
+
+    font-size:15px;
+
+}
+
+#medicineSearch{
+
+    flex:1;
+
+    padding:15px 18px;
+
+    font-size:16px;
+
+    border:none;
+
+    border-radius:30px;
+
+    outline:none;
+
+}
+
+.search-btn{
+
+    background:#25D366;
+
+    color:white;
+
+    border:none;
+
+    padding:15px 28px;
+
+    border-radius:30px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+    transition:.3s;
+
+}
+
+.search-btn:hover{
+
+    background:#18b658;
+
+}
+
+/* WHATSAPP */
 
 .whatsapp-btn{
-background:#25D366;
-color:white;
-padding:10px 15px;
-border-radius:5px;
-text-decoration:none;
+
+    background:#25D366;
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:14px 24px;
+
+    border-radius:30px;
+
+    font-weight:bold;
+
+    transition:.3s;
+
 }
 
+.whatsapp-btn:hover{
+
+    background:#1fb85a;
+
+}
+
+/* MENU */
+
+.main-menu{
+
+    background:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:35px;
+
+    padding:18px;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+
+}
+
+.main-menu a{
+
+    color:#222;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+    transition:.3s;
+
+}
+
+.main-menu a:hover{
+
+    color:#0a6d3b;
+
+}
+
+/* HERO */
+
 .hero{
-padding:30px 15px;
-text-align:center;
+
+    text-align:center;
+
+    padding:60px 20px;
+
+    background:linear-gradient(#ffffff,#eef8f2);
+
 }
 
 .hero h1{
-font-size:32px;
+
+    font-size:46px;
+
+    margin-bottom:15px;
+
+    color:#111;
+
 }
 
-.ai-search-box{
-width:100%;
-max-width:500px;
-padding:12px;
-margin-top:20px;
+.hero p{
+
+    font-size:19px;
+
+    color:#555;
+
+    margin-bottom:25px;
+
 }
 
 .ai-btn{
-padding:12px 20px;
-background:#0a6d3b;
-color:white;
-border:none;
-margin-top:10px;
-cursor:pointer;
+
+    background:#0a6d3b;
+
+    color:white;
+
+    border:none;
+
+    padding:15px 35px;
+
+    border-radius:35px;
+
+    font-size:17px;
+
+    cursor:pointer;
+
 }
 
-.categories,
+/* CATEGORY */
+
+.categories{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:20px;
+
+    padding:35px;
+
+}
+
+.card{
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:15px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+    transition:.3s;
+
+}
+
+.card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.card h2{
+
+    color:#0a6d3b;
+
+    margin-bottom:10px;
+
+}
+
+/* PRODUCTS */
+
 .product-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-padding:20px;
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+
+    gap:25px;
+
+    padding:35px;
+
 }
 
-.card,
 .product-card{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 2px 10px rgba(0,0,0,0.1);
+
+    background:white;
+
+    border-radius:18px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+
+    padding:25px;
+
+    text-align:center;
+
+    transition:.3s;
+
 }
+
+.product-card:hover{
+
+    transform:translateY(-6px);
+
+}
+
+.product-card h3{
+
+    color:#0a6d3b;
+
+    margin-bottom:10px;
+
+}
+
+.product-card p{
+
+    margin:8px 0;
+
+}
+
+.product-card .price{
+
+    color:#d62f2f;
+
+    font-size:24px;
+
+    font-weight:bold;
+
+}
+
+/* FOOTER */
 
 footer{
-background:#0a6d3b;
-color:white;
-padding:20px;
-text-align:center;
-margin-top:30px;
+
+    margin-top:50px;
+
+    background:#0a6d3b;
+
+    color:white;
+
+    text-align:center;
+
+    padding:35px;
+
 }
 
-@media(max-width:768px){
+footer h2{
+
+    margin-bottom:10px;
+
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+.top-bar{
+
+    display:none;
+
+}
 
 .navbar{
-flex-direction:column;
-gap:10px;
+
+    flex-direction:column;
+
+}
+
+.search-area{
+
+    width:100%;
+
+    margin:15px 0;
+
+}
+
+.main-menu{
+
+    flex-wrap:wrap;
+
+    gap:15px;
+
 }
 
 .hero h1{
-font-size:24px;
-}
 
-.search-box{
-width:100%;
+    font-size:32px;
+
 }
 
 }
