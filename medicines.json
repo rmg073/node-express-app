@@ -2,26 +2,31 @@
   {
     "name": "Arnica 30",
     "category": "Dilution",
+    "use": "Injury, bruises, muscle pain",
     "price": "120"
   },
   {
     "name": "Belladonna 30",
     "category": "Dilution",
+    "use": "Fever, headache, sore throat",
     "price": "110"
   },
   {
     "name": "Berberis Q",
     "category": "Mother Tincture",
+    "use": "Kidney stones, urinary pain",
     "price": "95"
   },
   {
     "name": "BC 12",
     "category": "Biochemic",
+    "use": "Tonsils, sore throat",
     "price": "80"
   },
   {
     "name": "R1 Drops",
     "category": "R Drops",
+    "use": "Headache and migraine",
     "price": "150"
   }
 ]
