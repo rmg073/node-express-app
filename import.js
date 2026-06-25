@@ -1,4 +1,3 @@
-
 const XLSX = require("xlsx");
 const fs = require("fs");
 const path = require("path");
@@ -80,5 +79,5 @@ JSON.stringify(medicines,null,2)
 
 console.log("SUCCESS");
 console.log("Medicines Imported :",medicines.length);
-```
+
 
