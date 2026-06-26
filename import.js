@@ -37,7 +37,7 @@ console.log("Reading:", item.file);
 console.log("Path:", fullPath);
 console.log("Exists:", fs.existsSync(fullPath));
 const workbook = XLSX.readFile(fullPath);
-
+console.log("Sheets:", workbook.SheetNames);
 const sheet=workbook.Sheets[workbook.SheetNames[0]];
 
 const data = XLSX.utils.sheet_to_json(sheet, { defval: "" });
