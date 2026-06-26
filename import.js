@@ -40,7 +40,13 @@ const workbook = XLSX.readFile(fullPath);
 
 const sheet=workbook.Sheets[workbook.SheetNames[0]];
 
-const data=XLSX.utils.sheet_to_json(sheet);
+const data = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+console.log("Rows:", data.length);
+
+if (data.length > 0) {
+    console.log("First Row:", JSON.stringify(data[0]));
+}
 
 data.forEach(row=>{
 
