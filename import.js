@@ -40,7 +40,12 @@ const workbook = XLSX.readFile(fullPath);
 console.log("Sheets:", workbook.SheetNames);
 const sheet=workbook.Sheets[workbook.SheetNames[0]];
 
-const data = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+const data = XLSX.utils.sheet_to_json(sheet, {
+  header: 1,
+  defval: ""
+});
+
+console.log(JSON.stringify(data.slice(0,20), null, 2));
 
 console.log("Rows:", data.length);
 
