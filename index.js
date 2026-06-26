@@ -49,3 +49,7 @@ app.get("/api/search", (req, res) => {
 app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
+
+if (process.env.RUN_IMPORT === "true") {
+    require("./import");
+}
