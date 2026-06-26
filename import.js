@@ -95,5 +95,9 @@ JSON.stringify(medicines,null,2)
 
 console.log("SUCCESS");
 console.log("Medicines Imported :",medicines.length);
+fs.writeFileSync(
+  path.join(__dirname, "public", "medicines.json"),
+  JSON.stringify(medicines, null, 2)
+);
 
-
+console.log("public/medicines.json created");
