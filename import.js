@@ -1,6 +1,8 @@
 const XLSX = require("xlsx");
 const fs = require("fs");
 const path = require("path");
+console.log("Current directory:", __dirname);
+console.log("Uploads folder:", path.join(__dirname, "uploads"));
 
 const files = [
 {
@@ -28,10 +30,13 @@ category:"R Drops"
 let medicines=[];
 
 files.forEach(item=>{
+const fullPath = path.join(__dirname, "uploads", item.file);
 
-const workbook=XLSX.readFile(
-path.join(__dirname,"uploads",item.file)
-);
+console.log("================================");
+console.log("Reading:", item.file);
+console.log("Path:", fullPath);
+console.log("Exists:", fs.existsSync(fullPath));
+const workbook = XLSX.readFile(fullPath);
 
 const sheet=workbook.Sheets[workbook.SheetNames[0]];
 
