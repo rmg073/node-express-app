@@ -2,100 +2,91 @@
 <html lang="en">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>MOHAN HEALTH AND HOME</title>
+<title>MOHAN HEALTH & HOME</title>
 
 <link rel="stylesheet" href="style.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 </head>
 
 <body>
 
-<header>
+<!-- ===========================
+TOP BAR
+=========================== -->
 
 <div class="top-bar">
 
-<div>
-⭐ 50+ Years of Trust
-</div>
+<div>⭐ Trusted Since 1975</div>
 
-<div>
-🚚 Free Shipping Above ₹500
-</div>
+<div>🚚 Fast Delivery Across India</div>
 
-<div>
-📞 WhatsApp: +91 9837100364
-</div>
+<div>📞 +91 9837100364</div>
 
 </div>
 
-<nav class="navbar">
+<!-- ===========================
+HEADER
+=========================== -->
+
+<header>
+
+<div class="navbar">
 
 <div class="logo">
 
-<h2>MOHAN HEALTH & HOME</h2>
+<h2>MOHAN HEALTH</h2>
 
-<p>HOMEOPATHIC STORE</p>
+<span>HOMEOPATHIC STORE</span>
 
 </div>
 
 <div class="search-area">
 
-<select id="searchType">
-
-<option>Medicine</option>
-
-<option>Disease</option>
-
-<option>Symptoms</option>
-
-</select>
-
 <input
-
 type="text"
-
 id="medicineSearch"
-
-placeholder="Search medicines, symptoms or diseases..."
-
+placeholder="Search Medicines, Mother Tinctures, Biochemic, R Drops..."
+autocomplete="off"
 >
 
 <button
-
-class="search-btn"
-
+id="aiButton"
 onclick="searchMedicine()"
-
 >
 
-Search
+🤖 AI
 
 </button>
 
 </div>
 
-<div class="header-contact">
-
 <a
-
 href="https://wa.me/919837100364"
-
+target="_blank"
 class="whatsapp-btn"
-
 >
 
-WhatsApp Order
+WhatsApp
 
 </a>
 
 </div>
 
-</nav>
-
 </header>
+
+<!-- ===========================
+MENU
+=========================== -->
+
 <nav class="main-menu">
 
 <a href="#">Home</a>
@@ -104,7 +95,7 @@ WhatsApp Order
 
 <a href="#">Mother Tinctures</a>
 
-<a href="#">Biochemic Salts</a>
+<a href="#">Biochemic</a>
 
 <a href="#">BC Numbers</a>
 
@@ -113,79 +104,57 @@ WhatsApp Order
 <a href="#">Contact</a>
 
 </nav>
+
+<!-- ===========================
+HERO
+=========================== -->
+
 <section class="hero">
 
-<h1>India's Trusted Homeopathic Store</h1>
 <h1>
-Quality Medicines.
-Trusted Since 50+ Years.
+
+Search 3000+ Homeopathic Medicines
+
 </h1>
 
 <p>
 
-Search medicines,
-diseases,
-mother tinctures,
-biochemic salts
-and more.
+Type medicine name and get instant results.
 
 </p>
-<p>
-Dilutions • Mother Tinctures • Biochemic Salts • BC Numbers • R Drops
-</p>
-
-<button class="ai-btn" onclick="searchMedicine()">
-AI Search
-</button>
 
 </section>
 
-<section class="categories">
+<!-- ===========================
+LIVE SEARCH RESULTS
+=========================== -->
 
-<div class="card">
-<h2>Dilutions</h2>
-<p>High quality homeopathic dilutions</p>
-</div>
-
-<div class="card">
-<h2>Mother Tinctures</h2>
-<p>Original herbal mother tinctures</p>
-</div>
-
-<div class="card">
-<h2>Biochemic Salts</h2>
-<p>Schwabe and SBL salts available</p>
-</div>
-
-<div class="card">
-<h2>BC Numbers</h2>
-<p>Popular biochemic combinations</p>
-</div>
-
-<div class="card">
-<h2>R Drops</h2>
-<p>German remedy drops available</p>
-</div>
-
-</section>
-
-<section>
+<section class="search-section">
 
 <div
 id="searchResults"
-class="product-grid">
+class="results-grid">
+
 </div>
 
 </section>
+
+<!-- ===========================
+FOOTER
+=========================== -->
 
 <footer>
 
 <h2>
-MOHAN HEALTH AND HOME
+
+MOHAN HEALTH & HOME
+
 </h2>
 
 <p>
-50 Years in the Making
+
+Trusted Since 1975
+
 </p>
 
 </footer>
@@ -193,4 +162,5 @@ MOHAN HEALTH AND HOME
 <script src="script.js"></script>
 
 </body>
+
 </html>
