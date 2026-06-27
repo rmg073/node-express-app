@@ -8,11 +8,10 @@ const PORT = process.env.PORT || 10000;
 // Load full medicines database
 const medicines = JSON.parse(
     fs.readFileSync(
-        path.join(__dirname, "public", "medicines.json"),
+        path.join(__dirname, "medicines.json"),
         "utf8"
     )
 );
-
 // Serve static files
 app.use(express.static(path.join(__dirname, "public")));
 
