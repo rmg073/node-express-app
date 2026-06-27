@@ -5,51 +5,50 @@ const fs = require("fs");
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Read medicines database
+// Load full medicines database
 const medicines = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "medicines.json"), "utf8")
+    fs.readFileSync(
+        path.join(__dirname, "public", "medicines.json"),
+        "utf8"
+    )
 );
 
-// Serve all files inside /public
+// Serve static files
 app.use(express.static(path.join(__dirname, "public")));
 
-// Home Page
+// Home
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+    res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // Search API
 app.get("/api/search", (req, res) => {
 
-  const name = (req.query.name || "").toLowerCase().trim();
+    const q = (req.query.name || "").trim().toLowerCase();
 
-  if (!name) {
-    return res.json([]);
-  }
+    if (!q) {
+        return res.json([]);
+    }
 
-  const results = medicines.filter(item => {
+    const results = medicines.filter(item => {
 
-    const medicineName = (item.name || "").toLowerCase();
-    const category = (item.category || "").toLowerCase();
-    const use = (item.use || "").toLowerCase();
+        return (
+            (item.name || "").toLowerCase().includes(q) ||
+            (item.category || "").toLowerCase().includes(q) ||
+            (item.company || "").toLowerCase().includes(q) ||
+            (item.packing || "").toLowerCase().includes(q)
+        );
 
-    return (
-      medicineName.includes(name) ||
-      category.includes(name) ||
-      use.includes(name)
-    );
+    });
 
-  });
-
-  res.json(results);
+    res.json(results.slice(0,50));
 
 });
 
-// Start Server
 app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
-});
 
-if (process.env.RUN_IMPORT === "true") {
-    require("./import");
-}
+    console.log("Loaded Medicines :", medicines.length);
+
+    console.log("Server running on port", PORT);
+
+});
