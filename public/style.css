@@ -147,23 +147,17 @@ SEARCH AREA
 =========================== */
 
 .search-area{
-
+position:relative;
 flex:1;
-
+max-width:850px;
 display:flex;
-
 align-items:center;
-
-background:white;
-
+background:#fff;
 border:2px solid var(--primary);
-
 border-radius:50px;
-
-overflow:hidden;
-
+overflow:visible;
 box-shadow:var(--shadow);
-
+margin:auto;
 }
 
 #medicineSearch{
@@ -428,47 +422,32 @@ padding:40px 25px;
 /* AMAZON DROPDOWN */
 
 .search-dropdown{
-
 position:absolute;
-
-top:70px;
-
+top:68px;
 left:0;
-
-width:100%;
-
-background:white;
-
+right:0;
+background:#fff;
 border-radius:18px;
-
-box-shadow:0 15px 35px rgba(0,0,0,.15);
-
+box-shadow:0 15px 35px rgba(0,0,0,.18);
 display:none;
-
 max-height:450px;
-
 overflow-y:auto;
-
-z-index:99999;
-
+z-index:999999;
 }
 
 .search-item{
-
 display:flex;
-
 justify-content:space-between;
-
 align-items:center;
-
-padding:18px 22px;
-
-border-bottom:1px solid #eee;
-
+padding:18px 25px;
+border-bottom:1px solid #ececec;
 cursor:pointer;
-
+background:#fff;
 transition:.25s;
+}
 
+.search-item:last-child{
+border-bottom:none;
 }
 
 .search-item:hover{
