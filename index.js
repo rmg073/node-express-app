@@ -45,9 +45,9 @@ app.get("/api/search", (req, res) => {
 
     const q = (req.query.name || "").trim().toLowerCase();
 
-    if (q.length === 0) {
-        return res.json([]);
-    }
+   if (q.length === 0) {
+    return res.json(medicines);
+}
 
     const results = medicines.filter((item) => {
 
