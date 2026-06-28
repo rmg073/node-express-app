@@ -1,74 +1,281 @@
-async function searchMedicine() {
+// =========================================
+// MOHAN HEALTH & HOME
+// PROFESSIONAL SEARCH ENGINE V5
+// PART 1
+// =========================================
 
-const input = document
-.getElementById("medicineSearch")
-.value
-.trim();
+const searchBox = document.getElementById("medicineSearch");
+const results = document.getElementById("searchResults");
 
-const results =
-document.getElementById("searchResults");
+let medicines = [];
+let searchTimeout;
 
-if(input === ""){
+// ---------------------------
+// Create Dropdown
+// ---------------------------
 
-results.innerHTML =
-"<h2>Please enter a medicine name.</h2>";
+const dropdown = document.createElement("div");
+dropdown.className = "search-dropdown";
+dropdown.id = "searchDropdown";
 
-return;
+document.querySelector(".search-area").appendChild(dropdown);
+
+// ---------------------------
+// Load Medicines
+// ---------------------------
+
+async function loadMedicines() {
+
+    try {
+
+        const response = await fetch("/api/search?name=");
+
+        medicines = await response.json();
+
+        console.log("Medicines Loaded :", medicines.length);
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+    }
 
 }
 
-results.innerHTML =
-"<h2>Searching...</h2>";
+// ---------------------------
+// Live Search
+// ---------------------------
 
-try{
+searchBox.addEventListener("keyup", function () {
 
-const response =
-await fetch("/api/search?name=" + encodeURIComponent(input));
+    clearTimeout(searchTimeout);
 
-const medicines =
-await response.json();
+    searchTimeout = setTimeout(() => {
 
-if(medicines.length===0){
+        liveSearch(this.value);
 
-results.innerHTML =
-"<h2>No medicines found.</h2>";
+    }, 250);
 
-return;
+});
 
-}
+// ---------------------------
+// Live Search Function
+// ---------------------------
 
-results.innerHTML =
-medicines.map(item => `
+function liveSearch(text) {
 
-<div class="product-card">
+    const q = text.trim().toLowerCase();
 
-<h2>${item.name}</h2>
+    if (q.length < 2) {
 
-<p>${item.category}</p>
+        dropdown.style.display = "none";
 
-<h3>₹${item.price}</h3>
+        return;
 
-<a
-class="whatsapp-btn"
-target="_blank"
-href="https://wa.me/919837100364?text=I want to order ${encodeURIComponent(item.name)}">
+    }
 
-Buy Now
+    const matches = medicines.filter(item =>
 
-</a>
+        (item.name || "").toLowerCase().includes(q)
+
+    ).slice(0,10);
+  // =========================================
+// SHOW DROPDOWN
+// =========================================
+
+function showDropdown(list){
+
+    if(list.length===0){
+
+        dropdown.style.display="none";
+
+        return;
+
+    }
+
+    dropdown.innerHTML=list.map(item=>`
+
+<div class="search-item"
+
+onclick="selectMedicine('${item.name.replace(/'/g,"\\'")}')">
+
+<div>
+
+<h4>${item.name}</h4>
+
+<span>
+
+${item.category || ""}
+
+&nbsp;&nbsp;
+
+${item.company || ""}
+
+</span>
+
+</div>
+
+<div>
+
+₹${item.price || ""}
+
+</div>
 
 </div>
 
 `).join("");
 
-}
-catch(error){
-
-console.error(error);
-
-results.innerHTML =
-"<h2>Server Error</h2>";
+    dropdown.style.display="block";
 
 }
+
+// =========================================
+// CLICK MEDICINE
+// =========================================
+
+function selectMedicine(name){
+
+    searchBox.value=name;
+
+    dropdown.style.display="none";
+
+    searchMedicine();
+
+}
+
+// =========================================
+// HIDE DROPDOWN
+// =========================================
+
+document.addEventListener("click",(e)=>{
+
+    if(!e.target.closest(".search-area")){
+
+        dropdown.style.display="none";
+
+    }
+
+});
+// =========================================
+// SEARCH MEDICINE
+// =========================================
+
+async function searchMedicine() {
+
+    const input = searchBox.value.trim();
+
+    if (input === "") {
+
+        results.innerHTML = `
+        <div class="empty">
+            Start typing a medicine name...
+        </div>
+        `;
+
+        return;
+
+    }
+
+    results.innerHTML = `
+    <div class="loading">
+        Searching...
+    </div>
+    `;
+
+    try {
+
+        const response = await fetch(
+            "/api/search?name=" + encodeURIComponent(input)
+        );
+
+        const data = await response.json();
+
+        dropdown.style.display = "none";
+
+        if (data.length === 0) {
+
+            results.innerHTML = `
+            <div class="empty">
+                No medicines found.
+            </div>
+            `;
+
+            return;
+
+        }
+
+        results.innerHTML = data.map(item => `
+
+<div class="product-card fade">
+
+<div class="badge">
+${item.category || "Medicine"}
+</div>
+
+<h3>${item.name}</h3>
+
+<p><strong>Company:</strong> ${item.company || "-"}</p>
+
+<p><strong>Packing:</strong> ${item.packing || "-"}</p>
+
+<p><strong>Category:</strong> ${item.category || "-"}</p>
+
+<div class="new-price">
+₹${item.price || "-"}
+</div>
+
+<div class="card-buttons">
+
+<button class="buy-btn"
+onclick="window.open('https://wa.me/919837100364?text=${encodeURIComponent("I want to order " + item.name)}')">
+
+WhatsApp Order
+
+</button>
+
+</div>
+
+</div>
+
+        `).join("");
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+        results.innerHTML = `
+        <div class="empty">
+            Server Error
+        </div>
+        `;
+
+    }
+
+}
+
+// =========================================
+// ENTER KEY
+// =========================================
+
+searchBox.addEventListener("keypress", function(e){
+
+    if(e.key==="Enter"){
+
+        searchMedicine();
+
+    }
+
+});
+
+// =========================================
+// LOAD DATABASE
+// =========================================
+
+loadMedicines();
+    showDropdown(matches);
 
 }
