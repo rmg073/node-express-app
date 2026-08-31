@@ -2,7 +2,7 @@
  * Mohan Health & Home — Reckeweg → Shopify Import Builder
  *
  * Builds a Shopify-compatible product CSV from the existing medicines.json.
- * ONLY products whose company/brand contains RECKWEG/RECKEWEG are included.
+ * ONLY products whose company/brand contains RECKEWEG are included.
  *
  * Images are matched by product name against a local image folder when supplied.
  * No website scraping is performed by this importer.
@@ -58,7 +58,7 @@ function findImage(productName, images) {
   const target = normalize(productName);
   if (!target) return '';
 
-  let exact = images.find(x => x.key === target);
+  const exact = images.find(x => x.key === target);
   if (exact) return exact.file;
 
   let best = null;
@@ -76,9 +76,11 @@ if (!fs.existsSync(INPUT)) {
 }
 
 const all = JSON.parse(fs.readFileSync(INPUT, 'utf8'));
+
+// IMPORTANT: keep this export strictly limited to Dr. Reckeweg records.
 const products = all.filter(p => {
   const company = safe(p.company || p.brand || '');
-  return /reckweg/i.test(company) || /reckeweg/i.test(company);
+  return /reckeweg/i.test(company);
 });
 
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
