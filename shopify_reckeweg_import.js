@@ -1,12 +1,19 @@
 /**
- * Mohan Health & Home - Reckeweg -> Shopify Import Builder
+ * Mohan Health & Home — Reckeweg -> Shopify CSV Builder
  *
- * Exports only RECKWEG/RECKEWEG products from medicines.json.
- * Matches phone/local product images by Reckeweg code (R1, R2 ... R95)
- * and product-name tokens. Supports multiple images per product.
+ * Reads medicines.json, keeps only Reckeweg products, matches phone images,
+ * and creates a Shopify-compatible CSV.
+ *
+ * Matching priority:
+ *   1) Reckeweg code (R1, R2 ... R95), accepting R-9, R_9, R 9, etc.
+ *   2) Product-name token matching.
+ *
+ * IMPORTANT: Shopify needs public image URLs, not local filenames.
+ * Images are therefore expected under uploads/reckeweg and are referenced
+ * using the public GitHub raw URL for this repository.
  *
  * Run:
- *   node shopify_reckeweg_import.js "/storage/emulated/0/DCIM/Reckeweg"
+ *   node shopify_reckeweg_import.js
  */
 
 const fs = require('fs');
@@ -16,7 +23,8 @@ const ROOT = __dirname;
 const INPUT = path.join(ROOT, 'medicines.json');
 const OUTPUT_DIR = path.join(ROOT, 'exports');
 const OUTPUT = path.join(OUTPUT_DIR, 'shopify_reckeweg_products.csv');
-const imageFolder = process.argv[2] ? path.resolve(process.argv[2]) : null;
+const IMAGE_DIR = path.join(ROOT, 'uploads', 'reckeweg');
+const IMAGE_BASE_URL = 'https://raw.githubusercontent.com/rmg073/node-express-app/main/uploads/reckeweg';
 
 function safe(v) {
   return v === null || v === undefined ? '' : String(v).trim();
@@ -28,20 +36,30 @@ function csv(v) {
 }
 
 function slugify(v) {
-  return safe(v).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 200);
+  return safe(v)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 200);
 }
 
 function normalize(v) {
   return safe(v).toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
+// Accept R9, R-9, R_9, R 9, r9, etc. Return canonical codes such as R9.
 function codes(v) {
   const s = safe(v).toUpperCase();
-  return [...new Set((s.match(/\bR\s*\d{1,3}\b/g) || []).map(x => x.replace(/\s+/g, '')) )];
+  const found = [];
+  const re = /(?:^|[^A-Z0-9])R[\s_-]*(\d{1,3})(?=$|[^0-9])/g;
+  let m;
+  while ((m = re.exec(s)) !== null) found.push(`R${m[1]}`);
+  return [...new Set(found)];
 }
 
 function imageIndex(folder) {
   if (!folder || !fs.existsSync(folder)) return [];
+
   return fs.readdirSync(folder)
     .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f))
     .map(file => ({
@@ -53,25 +71,36 @@ function imageIndex(folder) {
 
 function findImages(product, images) {
   const name = safe(product.name);
-  const target = normalize(name);
-  const productCodes = codes(name + ' ' + safe(product.packing) + ' ' + safe(product.company));
-  if (!target && !productCodes.length) return [];
+  const productCodes = codes(`${name} ${safe(product.packing)} ${safe(product.company)}`);
 
-  // First priority: Reckeweg product code, e.g. R9/R10/R11.
+  // Strongest match: exact Reckeweg code.
   if (productCodes.length) {
     const byCode = images.filter(img => img.codes.some(c => productCodes.includes(c)));
-    if (byCode.length) return byCode.sort((a, b) => a.file.localeCompare(b.file, undefined, { numeric: true }));
+    if (byCode.length) {
+      return byCode.sort((a, b) => a.file.localeCompare(b.file, undefined, { numeric: true }));
+    }
   }
 
-  // Second priority: meaningful name-token overlap.
-  const stop = new Set(['dr','reckeweg','germany','drops','drop','ml','22ml','amp','ampoules','tablets','tablet','globules']);
-  const tokens = name.toLowerCase().split(/[^a-z0-9]+/).filter(x => x.length >= 3 && !stop.has(x));
+  // Fallback: meaningful product-name tokens.
+  const stop = new Set([
+    'dr', 'reckeweg', 'reckweg', 'germany', 'drops', 'drop', 'ml', '22ml',
+    'amp', 'ampoules', 'tablets', 'tablet', 'globules', 'germanydr'
+  ]);
+  const tokens = name.toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(x => x.length >= 3 && !stop.has(x));
+
+  if (!tokens.length) return [];
+
   const scored = images.map(img => {
     const k = img.key;
     let score = 0;
     for (const t of tokens) if (k.includes(t)) score += Math.min(t.length, 8);
     return { img, score };
-  }).filter(x => x.score >= 6).sort((a,b) => b.score - a.score || a.img.file.localeCompare(b.img.file, undefined, {numeric:true}));
+  })
+    .filter(x => x.score >= 6)
+    .sort((a, b) => b.score - a.score || a.img.file.localeCompare(b.img.file, undefined, { numeric: true }));
+
   return scored.slice(0, 10).map(x => x.img);
 }
 
@@ -81,9 +110,10 @@ if (!fs.existsSync(INPUT)) {
 }
 
 const all = JSON.parse(fs.readFileSync(INPUT, 'utf8'));
-const products = all.filter(p => /reckeweg/i.test(safe(p.company || p.brand || '')));
+const products = all.filter(p => /reckeweg|reckweg/i.test(safe(p.company || p.brand || '')));
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-const images = imageIndex(imageFolder);
+
+const images = imageIndex(IMAGE_DIR);
 
 const header = [
   'Handle','Title','Body (HTML)','Vendor','Product Category','Type','Tags',
@@ -139,12 +169,16 @@ for (const p of products) {
   const imgs = productImages.length ? productImages : [null];
   imgs.forEach((img, idx) => {
     const imageFile = img ? img.file : '';
+    const imageUrl = imageFile
+      ? `${IMAGE_BASE_URL}/${encodeURIComponent(imageFile).replace(/%2F/g, '/')}`
+      : '';
+
     rows.push([
       ...base,
-      imageFile,
+      imageUrl,
       imageFile ? String(idx + 1) : '',
       name,
-      name,
+      `${vendor} ${name}${packing ? ' ' + packing : ''}`,
       `${vendor} ${name}${packing ? ' ' + packing : ''}`,
       'draft'
     ].map(csv).join(','));
@@ -158,7 +192,7 @@ console.log('MOHAN HEALTH & HOME - SHOPIFY RECKEWEG EXPORT');
 console.log('==============================================');
 console.log(`Source records: ${all.length}`);
 console.log(`Reckeweg products: ${products.length}`);
-console.log(`Image folder: ${imageFolder || '(not supplied)'}`);
+console.log(`Image folder: ${IMAGE_DIR}`);
 console.log(`Image files found: ${images.length}`);
 console.log(`Products matched: ${matchedProducts}`);
 console.log(`Images matched: ${matchedImages}`);
