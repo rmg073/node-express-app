@@ -1,16 +1,17 @@
 /**
  * Mohan Health & Home — Reckeweg -> Shopify CSV Builder
  *
- * Reads medicines.json, keeps only Reckeweg products, matches phone images,
- * and creates a Shopify-compatible CSV.
+ * Creates ONE Shopify product per medicine and combines different potencies
+ * and pack sizes as Shopify variants.
  *
- * Matching priority:
- *   1) Reckeweg code (R1, R2 ... R95), accepting R-9, R_9, R 9, etc.
- *   2) Product-name token matching.
+ * Example:
+ *   ACONITUM NAP
+ *     Potency: 30 | 200 | 1M | 10M | CM
+ *     Pack Size: 10ML | 20ML | 30ML
  *
- * IMPORTANT: Shopify needs public image URLs, not local filenames.
- * Images are therefore expected under uploads/reckeweg and are referenced
- * using the public GitHub raw URL for this repository.
+ * Source: medicines.json
+ * Images: uploads/reckeweg
+ * Output: exports/shopify_reckeweg_products.csv
  *
  * Run:
  *   node shopify_reckeweg_import.js
@@ -47,7 +48,6 @@ function normalize(v) {
   return safe(v).toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
-// Accept R9, R-9, R_9, R 9, r9, etc. Return canonical codes such as R9.
 function codes(v) {
   const s = safe(v).toUpperCase();
   const found = [];
@@ -57,9 +57,23 @@ function codes(v) {
   return [...new Set(found)];
 }
 
+// Potencies are normally written at the end of the medicine name.
+// R-numbers are deliberately NOT treated as potencies.
+function extractPotency(name) {
+  const s = safe(name).replace(/[._-]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const m = s.match(/(?:^|\s)(\d+(?:\.\d+)?(?:X|M)|CM|MM|LM|Q)\s*$/i);
+  return m ? m[1].toUpperCase() : '';
+}
+
+function baseMedicineName(name) {
+  const s = safe(name).replace(/[._-]+/g, ' ').replace(/\s+/g, ' ').trim();
+  return extractPotency(s)
+    ? s.replace(/\s+(\d+(?:\.\d+)?(?:X|M)|CM|MM|LM|Q)\s*$/i, '').trim()
+    : s;
+}
+
 function imageIndex(folder) {
   if (!folder || !fs.existsSync(folder)) return [];
-
   return fs.readdirSync(folder)
     .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f))
     .map(file => ({
@@ -73,7 +87,6 @@ function findImages(product, images) {
   const name = safe(product.name);
   const productCodes = codes(`${name} ${safe(product.packing)} ${safe(product.company)}`);
 
-  // Strongest match: exact Reckeweg code.
   if (productCodes.length) {
     const byCode = images.filter(img => img.codes.some(c => productCodes.includes(c)));
     if (byCode.length) {
@@ -81,7 +94,6 @@ function findImages(product, images) {
     }
   }
 
-  // Fallback: meaningful product-name tokens.
   const stop = new Set([
     'dr', 'reckeweg', 'reckweg', 'germany', 'drops', 'drop', 'ml', '22ml',
     'amp', 'ampoules', 'tablets', 'tablet', 'globules', 'germanydr'
@@ -117,71 +129,121 @@ const images = imageIndex(IMAGE_DIR);
 
 const header = [
   'Handle','Title','Body (HTML)','Vendor','Product Category','Type','Tags',
-  'Published','Option1 Name','Option1 Value','Variant SKU','Variant Grams',
-  'Variant Inventory Tracker','Variant Inventory Qty','Variant Inventory Policy',
-  'Variant Fulfillment Service','Variant Price','Variant Compare At Price',
-  'Variant Requires Shipping','Variant Taxable','Image Src','Image Position',
-  'Image Alt Text','SEO Title','SEO Description','Status'
+  'Published','Option1 Name','Option1 Value','Option2 Name','Option2 Value',
+  'Variant SKU','Variant Grams','Variant Inventory Tracker','Variant Inventory Qty',
+  'Variant Inventory Policy','Variant Fulfillment Service','Variant Price',
+  'Variant Compare At Price','Variant Requires Shipping','Variant Taxable',
+  'Image Src','Image Position','Image Alt Text','SEO Title','SEO Description','Status'
 ];
 
 const rows = [header.join(',')];
+
+// Group records by medicine after removing the trailing potency.
+const groups = new Map();
+for (const p of products) {
+  const originalName = safe(p.name);
+  if (!originalName) continue;
+  const title = baseMedicineName(originalName);
+  const key = normalize(`${safe(p.company)}|${title}`);
+  if (!groups.has(key)) groups.set(key, { title, records: [] });
+  groups.get(key).records.push(p);
+}
+
+let variantCount = 0;
 let matchedProducts = 0;
 let matchedImages = 0;
 let unmatchedProducts = 0;
+let duplicateVariants = 0;
 
-for (const p of products) {
-  const name = safe(p.name);
-  if (!name) continue;
+for (const group of groups.values()) {
+  const first = group.records[0];
+  const title = group.title;
+  const vendor = safe(first.company) || 'Dr. Reckeweg';
+  const category = safe(first.category) || 'Homeopathic Medicine';
+  const handle = slugify(`${vendor}-${title}`);
 
-  const handle = slugify(`${safe(p.company)}-${name}-${safe(p.packing)}`);
-  const category = safe(p.category) || 'Homeopathic Medicine';
-  const vendor = safe(p.company) || 'Dr. Reckeweg';
-  const packing = safe(p.packing);
-  const mrp = safe(p.mrp);
-  const hsn = safe(p.hsn);
-  const gst = safe(p.igst || '5');
-  const sku = `${slugify(vendor)}-${slugify(name)}${packing ? '-' + slugify(packing) : ''}`;
-  const productImages = findImages(p, images);
+  const variants = [];
+  const seen = new Set();
+  for (const p of group.records) {
+    const potency = extractPotency(p.name) || 'Standard';
+    const packing = safe(p.packing) || 'Standard';
+    const key = `${normalize(potency)}|${normalize(packing)}`;
+    if (seen.has(key)) {
+      duplicateVariants++;
+      continue;
+    }
+    seen.add(key);
+    variants.push({ p, potency, packing });
+  }
 
-  if (productImages.length) {
+  const groupImages = [];
+  const seenImages = new Set();
+  for (const v of variants) {
+    for (const img of findImages(v.p, images)) {
+      if (!seenImages.has(img.file)) {
+        seenImages.add(img.file);
+        groupImages.push(img);
+      }
+    }
+  }
+
+  if (groupImages.length) {
     matchedProducts++;
-    matchedImages += productImages.length;
+    matchedImages += groupImages.length;
   } else {
     unmatchedProducts++;
   }
 
   const description = [
-    `<p><strong>${name}</strong></p>`,
-    packing ? `<p>Pack: ${packing}</p>` : '',
-    vendor ? `<p>Brand: ${vendor}</p>` : '',
-    hsn ? `<p>HSN: ${hsn}</p>` : '',
-    gst ? `<p>GST: ${gst}%</p>` : ''
+    `<p><strong>${title}</strong></p>`,
+    `<p>Brand: ${vendor}</p>`,
+    `<p>Potency and pack size can be selected above.</p>`,
+    safe(first.hsn) ? `<p>HSN: ${safe(first.hsn)}</p>` : '',
+    safe(first.igst) ? `<p>GST: ${safe(first.igst)}%</p>` : ''
   ].filter(Boolean).join('');
 
-  const tags = ['Reckeweg', 'Dr. Reckeweg', category, packing].filter(Boolean).join(', ');
-  const base = [
-    handle, name, description, vendor,
-    'Health & Household > Health Care > Homeopathic Remedies',
-    category, tags, 'TRUE', 'Title', packing || 'Default', sku, '',
-    'shopify', '0', 'deny', 'manual', mrp, '', 'TRUE', 'TRUE'
-  ];
+  const tags = ['Reckeweg', 'Dr. Reckeweg', category].filter(Boolean).join(', ');
 
-  const imgs = productImages.length ? productImages : [null];
-  imgs.forEach((img, idx) => {
-    const imageFile = img ? img.file : '';
-    const imageUrl = imageFile
-      ? `${IMAGE_BASE_URL}/${encodeURIComponent(imageFile).replace(/%2F/g, '/')}`
+  variants.forEach((v, variantIndex) => {
+    const p = v.p;
+    const sku = `${slugify(vendor)}-${slugify(title)}-${slugify(v.potency)}-${slugify(v.packing)}`;
+    const mrp = safe(p.mrp);
+    const image = groupImages[variantIndex] || groupImages[0] || null;
+    const imageUrl = image
+      ? `${IMAGE_BASE_URL}/${encodeURIComponent(image.file).replace(/%2F/g, '/')}`
       : '';
 
     rows.push([
-      ...base,
+      handle,
+      title,
+      description,
+      vendor,
+      'Health & Household > Health Care > Homeopathic Remedies',
+      category,
+      tags,
+      'TRUE',
+      'Potency',
+      v.potency,
+      'Pack Size',
+      v.packing,
+      sku,
+      '',
+      'shopify',
+      '0',
+      'deny',
+      'manual',
+      mrp,
+      '',
+      'TRUE',
+      'TRUE',
       imageUrl,
-      imageFile ? String(idx + 1) : '',
-      name,
-      `${vendor} ${name}${packing ? ' ' + packing : ''}`,
-      `${vendor} ${name}${packing ? ' ' + packing : ''}`,
+      image ? String(variantIndex + 1) : '',
+      `${vendor} ${title} ${v.potency} ${v.packing}`,
+      title,
+      `${title} - ${vendor} - Potency ${v.potency} - Pack Size ${v.packing}`,
       'draft'
     ].map(csv).join(','));
+    variantCount++;
   });
 }
 
@@ -189,13 +251,17 @@ fs.writeFileSync(OUTPUT, rows.join('\n'), 'utf8');
 
 console.log('==============================================');
 console.log('MOHAN HEALTH & HOME - SHOPIFY RECKEWEG EXPORT');
+console.log('ONE MEDICINE = MULTIPLE VARIANTS');
 console.log('==============================================');
 console.log(`Source records: ${all.length}`);
-console.log(`Reckeweg products: ${products.length}`);
+console.log(`Reckeweg source records: ${products.length}`);
+console.log(`Shopify products created: ${groups.size}`);
+console.log(`Shopify variants created: ${variantCount}`);
+console.log(`Duplicate variant combinations skipped: ${duplicateVariants}`);
 console.log(`Image folder: ${IMAGE_DIR}`);
 console.log(`Image files found: ${images.length}`);
-console.log(`Products matched: ${matchedProducts}`);
-console.log(`Images matched: ${matchedImages}`);
-console.log(`Products unmatched: ${unmatchedProducts}`);
+console.log(`Products with images: ${matchedProducts}`);
+console.log(`Images attached: ${matchedImages}`);
+console.log(`Products without images: ${unmatchedProducts}`);
 console.log(`FINAL FILE: ${OUTPUT}`);
 console.log('Products remain DRAFT. Nothing is published automatically.');
